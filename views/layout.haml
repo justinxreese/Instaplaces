@@ -5,7 +5,7 @@
     %style * {font-family: Helvetica;}
     %script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js")
     :javascript
-        $(locateUser);
+        $(document).ready(locateUser);
         function locateUser(){
           if (navigator.geolocation) {
               navigator.geolocation.getCurrentPosition(function(a) {

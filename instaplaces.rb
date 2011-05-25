@@ -28,7 +28,7 @@ class Instaplaces < Sinatra::Base; end;
 
 class Instaplaces
   get "/" do
-    haml "<div id='pictures'></div>"
+    haml "<div id='pictures'>Please allow geolocation services...</div>"
   end
 
   get "/needs_instagram_auth" do
@@ -91,6 +91,6 @@ class Instaplaces
         end
       end
     end
-    haml html
+    haml html, :layout => (request.xhr? ? false : :layout)
   end
 end

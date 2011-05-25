@@ -1,5 +1,6 @@
 require "instagram"
 require "yaml"
+require "haml"
 
 enable :sessions
 
@@ -27,7 +28,9 @@ class Instaplaces < Sinatra::Base; end;
 
 class Instaplaces
   get "/" do
-    '<a href="/oauth/connect">Connect with Instagram</a>'
+    html << '<a href="/oauth/connect">Connect with Instagram</a>'
+    html << "Javascript to get lat/lng"
+    haml html
   end
   
   get "/oauth/connect" do
@@ -51,10 +54,11 @@ class Instaplaces
     html
   end
   
-  get "/nearby" do
+  get "/nearby/:lat_lng" do
     client = Instagram.client(:access_token => session[:access_token])
   
-    loc_string = "40.405784,-79.908714"
+    # loc_string = "40.405784,-79.908714"
+    loc_string = params[:lat_lng]
     lat = loc_string.split(",")[0]
     lng = loc_string.split(",")[1]
     html = "<h1>Photos near #{lat}.#{lng}</h1>"
@@ -85,6 +89,6 @@ class Instaplaces
         end
       end
     end
-    html
+    haml html
   end
 end

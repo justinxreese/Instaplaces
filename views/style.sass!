@@ -1,0 +1,5 @@
+    :sass
+      .place
+        display: inline
+        float: right
+        background-color: '#000'

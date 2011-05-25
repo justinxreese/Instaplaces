@@ -1,6 +1,7 @@
 require "instagram"
 require "yaml"
 require "haml"
+require "sass"
 
 enable :sessions
 
@@ -28,8 +29,19 @@ class Instaplaces < Sinatra::Base; end;
 
 class Instaplaces
   get "/" do
-    haml "<div id='pictures'>Please allow geolocation services...</div>"
+    html = "<h1>Instaplaces</h1>"
+    html << "<p>Instaplaces is a tool for finding cool things around you that you may have"
+    html << "never known existed. The photos below we all taken with Instagram at places near"
+    html << "you. Made for you with love by <a href='http://www.twitter.com/justinxreese'>@justinxreese</a></p>"
+    # html << "<input type='text' id='latlnginput'></input>"
+    html << "<div id='pictures'>Please allow geolocation services...</div>"
+    haml html
   end
+
+  get '/stylesheets/style.css' do
+    sass :style
+  end
+
 
   get "/needs_instagram_auth" do
     haml '<a href="/oauth/connect">Connect with Instagram</a>'
@@ -63,9 +75,9 @@ class Instaplaces
     loc_string = params[:lat_lng]
     lat = loc_string.split(",")[0]
     lng = loc_string.split(",")[1]
-    html = "<h1>Photos near #{lat},#{lng}</h1>"
+    html = "<h2>Photos near #{lat},#{lng}</h2>"
   
-    media_items = client.media_search(lat,lng,{:count =>50, :distance => 5000, :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
+    media_items = client.media_search(lat,lng,{:count =>100, :distance => 5000, :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
     places = Hash.new
     media_items.each do |media_item|
       places[media_item.location.id] = [] unless places[media_item.location.id]
@@ -79,17 +91,25 @@ class Instaplaces
     end # media_item
   
     places.sort{|a, b| -1*(a[1].count <=> b[1].count)}.each do |place_id,posts|
+      html << "<div class='place'>"
       if place_id
-        html << "#{posts.count} Photos taken at "+client.location(place_id).name+"<br/>"
+        html << "<div class='title'>"
+        html << "<div class='location-name'>#{client.location(place_id).name}</div>"
+        html << "<div class='number-posts'>#{posts.count}</div> Pics"
+        html << "</div>"
         posts.each do |post|
           html << post.to_html
         end
       else
-        html << "#{posts.count} Photos taken in untagged locations in the area<br/>"
+        html << "<div class='title'>"
+        html << "<div class='location-name'>N/A</div>"
+        html << "<div class='number-posts'>#{posts.count}</div> Pics"
+        html << "</div>"
         posts.each do |post|
           html << post.to_html
         end
       end
+      html << "</div>"
     end
     haml html, :layout => (request.xhr? ? false : :layout)
   end

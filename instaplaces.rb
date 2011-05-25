@@ -1,4 +1,3 @@
-# require "sinatra"
 require "instagram"
 require "yaml"
 

@@ -20,7 +20,7 @@ class InstagramPost
     html = "<a href='#{self.link}'>"
     html += "<img src='#{self.thumb_url}' title='#{self.location_name} - #{self.location_lat},#{self.location_lng}'>"
     html += "</a>"
-    html += "<br/>#{self.location_name}<br/>"
+    html += "<br/><br/>"
     return html
   end
 end
@@ -33,7 +33,7 @@ class Instaplaces
     html << "<p>Instaplaces is a tool for finding cool things around you that you may have "
     html << "never knew existed. By using your phone's GPS or your computer's location, I've listed "
     html << "below the places near you where people are taking pictures most frequently using the "
-    html << "popular Instagram app. Made for you with love "
+    html << "popular Instagram app. Made for you with ruby, sinatra, haml, sass, and love "
     html << "by <a href='http://www.twitter.com/justinxreese'>@justinxreese</a></p>"
     # html << "<input type='text' id='latlnginput'></input>"
     html << "<div id='pictures'>Please allow geolocation services...</div>"
@@ -97,7 +97,8 @@ class Instaplaces
       if place_id
         html << "<div class='title'>"
         html << "<div class='location-name'>#{client.location(place_id).name}</div>"
-        html << "<div class='number-posts'>#{posts.count}</div> Pics"
+        pic_word = posts.count == 1 ? "Pic" : "Pics"
+        html << "<div class='number-posts'>#{posts.count}</div> #{pic_word}"
         html << "</div>"
         posts.each do |post|
           html << post.to_html
@@ -105,7 +106,8 @@ class Instaplaces
       else
         html << "<div class='title'>"
         html << "<div class='location-name'>N/A</div>"
-        html << "<div class='number-posts'>#{posts.count}</div> Pics"
+        pic_word = posts.count == 1 ? "Pic" : "Pics"
+        html << "<div class='number-posts'>#{posts.count}</div> #{pic_word}"
         html << "</div>"
         posts.each do |post|
           html << post.to_html

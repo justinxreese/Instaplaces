@@ -36,7 +36,10 @@ class Instaplaces
   get '/stylesheets/style.css' do
     sass :style
   end
-
+  
+  get '/camera.png' do
+    send_file('public/camera.png')
+  end
 
   get "/needs_instagram_auth" do
     haml '<a href="/oauth/connect">Connect with Instagram</a>'

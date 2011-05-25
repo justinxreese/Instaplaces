@@ -60,7 +60,7 @@ class Instaplaces
     lng = loc_string.split(",")[1]
     html = "<h1>Photos near #{lat}.#{lng}</h1>"
   
-    media_items = client.media_search(lat,lng,{:count =>50, :distance => 5000, :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
+    media_items = client.media_search(lat,lng,{:count =>50, :distance => 5000, :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_datetime.to_i})
     places = Hash.new
     media_items.each do |media_item|
       places[media_item.location.id] = [] unless places[media_item.location.id]

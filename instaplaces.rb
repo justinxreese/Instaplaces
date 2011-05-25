@@ -5,7 +5,7 @@ require "sass"
 
 enable :sessions
 
-CALLBACK_URL = "http://localhost:4567/oauth/callback"
+CALLBACK_URL = "http://instaplac.es/oauth/callback"
 key_file = YAML.load_file('config/keys.yml')
 
 Instagram.configure do |config|

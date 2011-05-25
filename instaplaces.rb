@@ -30,9 +30,11 @@ class Instaplaces < Sinatra::Base; end;
 class Instaplaces
   get "/" do
     html = "<h1>Instaplaces</h1>"
-    html << "<p>Instaplaces is a tool for finding cool things around you that you may have"
-    html << "never known existed. The photos below we all taken with Instagram at places near"
-    html << "you. Made for you with love by <a href='http://www.twitter.com/justinxreese'>@justinxreese</a></p>"
+    html << "<p>Instaplaces is a tool for finding cool things around you that you may have "
+    html << "never knew existed. By using your phone's GPS or your computer's location, I've listed "
+    html << "below the places near you where people are taking pictures most frequently using the "
+    html << "popular Instagram app. Made for you with love "
+    html << "by <a href='http://www.twitter.com/justinxreese'>@justinxreese</a></p>"
     # html << "<input type='text' id='latlnginput'></input>"
     html << "<div id='pictures'>Please allow geolocation services...</div>"
     haml html
@@ -75,7 +77,7 @@ class Instaplaces
     loc_string = params[:lat_lng]
     lat = loc_string.split(",")[0]
     lng = loc_string.split(",")[1]
-    html = "<h2>Photos near #{lat},#{lng}</h2>"
+    html = "<h3>Photos near #{lat},#{lng}</h3>"
   
     media_items = client.media_search(lat,lng,{:count =>100, :distance => 5000, :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
     places = Hash.new

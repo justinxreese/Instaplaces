@@ -1,9 +1,24 @@
 !!!
 %html
-   %head
-      %title Instaplaces
-      %style * {font-family: Helvetica;}
-      %script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js")
+  %head
+    %title Instaplaces
+    %style * {font-family: Helvetica;}
+    %script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js")
+    :javascript
+        $(locateUser);
+        function locateUser(){
+          if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(function(a) {
+                  var lat = a.coords.latitude;
+                  var lng = a.coords.longitude;
+                  $('#pictures').load('nearby/'+lat+','+lng);
+              }, function(a) {
+                  alert("could not find your location!");
+              });
+          }
+          else {
+              alert("Your browser does not support geo location, please try using another browser.");
+          }
+        }
 
-   %body= yield
-
+  %body= yield

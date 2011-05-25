@@ -28,9 +28,11 @@ class Instaplaces < Sinatra::Base; end;
 
 class Instaplaces
   get "/" do
-    html << '<a href="/oauth/connect">Connect with Instagram</a>'
-    html << "Javascript to get lat/lng"
-    haml html
+    haml "<div id='pictures'></div>"
+  end
+
+  get "/needs_instagram_auth" do
+    haml '<a href="/oauth/connect">Connect with Instagram</a>'
   end
   
   get "/oauth/connect" do
@@ -61,7 +63,7 @@ class Instaplaces
     loc_string = params[:lat_lng]
     lat = loc_string.split(",")[0]
     lng = loc_string.split(",")[1]
-    html = "<h1>Photos near #{lat}.#{lng}</h1>"
+    html = "<h1>Photos near #{lat},#{lng}</h1>"
   
     media_items = client.media_search(lat,lng,{:count =>50, :distance => 5000, :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
     places = Hash.new

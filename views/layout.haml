@@ -2,6 +2,12 @@
 %html
   %head
     %title Instaplaces
+    %meta{:content => "Instaplaces", :property => "og:title"}/
+    %meta{:content => "website", :property => "og:type"}/
+    %meta{:content => "http://www.instaplac.es", :property => "og:url"}/
+    %meta{:content => "", :property => "og:image"}/
+    %meta{:content => "Instaplaces", :property => "og:site_name"}/
+    %meta{:content => "14216438", :property => "fb:admins"}/
     %link{:rel=>'stylesheet', :href=>'/stylesheets/style.css', :type => "text/css"}       
     %script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js")
     :javascript
@@ -22,7 +28,22 @@
         }
 
   %body
-    %content= yield
+    %h1 Instaplaces 
+    #intro
+      %p 
+        Instaplaces is a tool for finding cool things around you that you may have 
+        never knew existed. By using your phone's GPS or your computer's location, I've listed 
+        below the places near you where people are taking pictures most frequently using the 
+        popular Instagram app. Made for you with ruby, sinatra, haml, sass, and love 
+        by <a href='http://www.twitter.com/justinxreese'>@justinxreese</a>
+      %script{:src => "http://platform.twitter.com/widgets.js", :type => "text/javascript"}
+      #social
+        #tweet
+          %a.twitter-share-button{"data-count" => "horizontal", "data-related" => "justinxreese:The creator of Instaplac.es", "data-text" => "Found some cool places around me with Instaplaces", "data-url" => "http://instaplac.es", "data-via" => "justinxreese", :href => "http://twitter.com/share"} Tweet
+        #fb-root
+        %script{:src => "http://connect.facebook.net/en_US/all.js#appId=225294147496153&xfbml=1"}
+        %fb:like{:font => "arial", :href => "http://instaplac.es", :send => "true", :show_faces => "true", :width => "450"}
+    #content= yield
     :javascript
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-12466092-4']);

@@ -29,15 +29,8 @@ class Instaplaces < Sinatra::Base; end;
 
 class Instaplaces
   get "/" do
-    html = "<h1>Instaplaces</h1>"
-    html << "<p>Instaplaces is a tool for finding cool things around you that you may have "
-    html << "never knew existed. By using your phone's GPS or your computer's location, I've listed "
-    html << "below the places near you where people are taking pictures most frequently using the "
-    html << "popular Instagram app. Made for you with ruby, sinatra, haml, sass, and love "
-    html << "by <a href='http://www.twitter.com/justinxreese'>@justinxreese</a></p>"
     # html << "<input type='text' id='latlnginput'></input>"
-    html << "<div id='pictures'>Please allow geolocation services...</div>"
-    haml html
+    haml "<div id='pictures'>Please allow geolocation services...</div>"
   end
 
   get '/stylesheets/style.css' do

@@ -1,2 +1,3 @@
 config/*.yml
 pitch
+.DS_Store

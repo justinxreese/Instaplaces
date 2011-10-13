@@ -73,7 +73,7 @@ class Instaplaces
     loc_string = params[:lat_lng]
     lat = loc_string.split(",")[0]
     lng = loc_string.split(",")[1]
-    html = "<h3>Photos near <a href='/#{lat},#{lng}'>#{lat},#{lng}</a></h3>"
+    html = "<h3>Photos near <a href='/nearby/#{lat},#{lng}'>#{lat},#{lng}</a></h3>"
   
     media_items = client.media_search(lat,lng,{:count =>100, :distance => 5000, :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
     places = Hash.new

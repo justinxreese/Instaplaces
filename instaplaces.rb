@@ -34,7 +34,6 @@ class Instaplaces < Sinatra::Base; end;
 
 class Instaplaces
   get "/" do
-    # html << "<input type='text' id='latlnginput'></input>"
     haml "<div id='pictures'>Please allow geolocation services...</div>"
   end
 
@@ -61,10 +60,11 @@ class Instaplaces
   end
   
   get "/error/:intent" do
-    if params[:intent] == 'web'
+    intent = params[:intent].gsub(/[^a-z]/,'')
+    if intent == 'web'
       html = "<div id='error'>Sorry, something went wrong on Instagram's side. Try reloading.<div>"
       haml html, :layout => (request.xhr? ? false : :layout)
-    elsif params[:intent] == 'api'
+    elsif intent == 'api'
       {error:"Instagram service error"}.to_json
     end
   end
@@ -83,7 +83,7 @@ class Instaplaces
   get "/api/nearby/:lat_lng" do
     client = Instagram.client(:access_token => session[:access_token])
 
-    loc_string = params[:lat_lng]
+    loc_string = params[:lat_lng].gsub(/[^0-9,\.-]/,'')
     lat = loc_string.split(",")[0]
     lng = loc_string.split(",")[1]
   
@@ -112,7 +112,7 @@ class Instaplaces
     client = Instagram.client(:access_token => session[:access_token])
   
     # loc_string = "40.405784,-79.908714"
-    loc_string = params[:lat_lng]
+    loc_string = params[:lat_lng].gsub(/[^0-9,\.-]/,'')
     lat = loc_string.split(",")[0]
     lng = loc_string.split(",")[1]
     html = "<h3>Photos near <a href='/nearby/#{lat},#{lng}'>#{lat},#{lng}</a></h3>"

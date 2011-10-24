@@ -66,6 +66,29 @@ class Instaplaces
     html
   end
   
+  get "api/nearby/:lat_lng" do
+    client = Instagram.client(:access_token => session[:access_token])
+
+    loc_string = params[:lat_lng]
+    lat = loc_string.split(",")[0]
+    lng = loc_string.split(",")[1]
+  
+    media_items = client.media_search(lat,lng,{:count =>100, :distance => 5000, :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
+    places = Hash.new
+    media_items.each do |media_item|
+      places[media_item.location.id] = [] unless places[media_item.location.id]
+      post = InstagramPost.new
+      post.link = media_item.link 
+      post.thumb_url = media_item.images.thumbnail.url
+      post.location_name = media_item.location.name 
+      post.location_lat = media_item.location.latitude 
+      post.location_lng = media_item.location.longitude
+      places[media_item.location.id] << post
+    end # media_item
+  
+    places.sort{|a, b| -1*(a[1].count <=> b[1].count)}.to_json
+  end
+
   get "/nearby/:lat_lng" do
     client = Instagram.client(:access_token => session[:access_token])
   

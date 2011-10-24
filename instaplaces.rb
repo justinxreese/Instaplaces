@@ -1,7 +1,8 @@
-require "instagram"
-require "yaml"
-require "haml"
-require "sass"
+require 'instagram'
+require 'yaml'
+require 'haml'
+require 'sass'
+require 'json'
 
 enable :sessions
 
@@ -21,7 +22,11 @@ class InstagramPost
     html += "<img src='#{self.thumb_url}' title='#{self.location_name} - #{self.location_lat},#{self.location_lng}'>"
     html += "</a>"
     html += "<br/><br/>"
-    return html
+  end
+
+  def to_json
+   {link:self.link, thumb_url:self.thumb_url, location_name:self.location_name, 
+    location_lat:self.location_lat, location_lng:self.location_lng}.to_json
   end
 end
 
@@ -55,6 +60,15 @@ class Instaplaces
     redirect "/feed"
   end
   
+  get "/error/:intent" do
+    if params[:intent] == 'web'
+      html = "<div id='error'>Sorry, something went wrong on Instagram's side. Try reloading.<div>"
+      haml html, :layout => (request.xhr? ? false : :layout)
+    elsif params[:intent] == 'api'
+      {error:"Instagram service error"}.to_json
+    end
+  end
+  
   get "/feed" do
     client = Instagram.client(:access_token => session[:access_token])
     user = client.user
@@ -66,14 +80,19 @@ class Instaplaces
     html
   end
   
-  get "api/nearby/:lat_lng" do
+  get "/api/nearby/:lat_lng" do
     client = Instagram.client(:access_token => session[:access_token])
 
     loc_string = params[:lat_lng]
     lat = loc_string.split(",")[0]
     lng = loc_string.split(",")[1]
   
-    media_items = client.media_search(lat,lng,{:count =>100, :distance => 5000, :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
+    begin
+      media_items = client.media_search(lat,lng,{:count =>100, :distance => 5000, 
+        :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
+    rescue
+      redirect "/error/api" 
+    end
     places = Hash.new
     media_items.each do |media_item|
       places[media_item.location.id] = [] unless places[media_item.location.id]
@@ -86,7 +105,7 @@ class Instaplaces
       places[media_item.location.id] << post
     end # media_item
   
-    places.sort{|a, b| -1*(a[1].count <=> b[1].count)}.to_json
+    places.collect{|id,posts|posts.collect{|x| x.to_json}}.to_json
   end
 
   get "/nearby/:lat_lng" do
@@ -98,7 +117,12 @@ class Instaplaces
     lng = loc_string.split(",")[1]
     html = "<h3>Photos near <a href='/nearby/#{lat},#{lng}'>#{lat},#{lng}</a></h3>"
   
-    media_items = client.media_search(lat,lng,{:count =>100, :distance => 5000, :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
+    begin
+      media_items = client.media_search(lat,lng,{:count =>100, :distance => 5000, 
+        :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
+    rescue
+      redirect "/error/web"
+    end
     places = Hash.new
     media_items.each do |media_item|
       places[media_item.location.id] = [] unless places[media_item.location.id]

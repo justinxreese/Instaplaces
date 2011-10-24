@@ -1,4 +1,4 @@
 config/*.yml
 pitch
 .DS_Store
-.sass-cache/*
+.sass-cache/*/*

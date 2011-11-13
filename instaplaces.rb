@@ -3,6 +3,7 @@ require 'yaml'
 require 'haml'
 require 'sass'
 require 'json'
+require 'timeout'
 
 enable :sessions
 
@@ -61,11 +62,16 @@ class Instaplaces
   
   get "/error/:intent" do
     intent = params[:intent].gsub(/[^a-z]/,'')
-    if intent == 'web'
+    if intent == 'timeout'
+      html = "<div id='error'>Sorry, the Instagram service is unreachable. Try reloading. If the problem persists, come back later.<div>"
+      haml html, :layout => (request.xhr? ? false : :layout)
+    elsif intent == 'web'
       html = "<div id='error'>Sorry, something went wrong on Instagram's side. Try reloading.<div>"
       haml html, :layout => (request.xhr? ? false : :layout)
     elsif intent == 'api'
       {error:"Instagram service error"}.to_json
+    elsif intent == 'api_timeout'
+      {error:"Instagram service unavailable"}.to_json
     end
   end
   
@@ -88,10 +94,16 @@ class Instaplaces
     lng = loc_string.split(",")[1]
   
     begin
-      media_items = client.media_search(lat,lng,{:count =>100, :distance => 5000, 
-        :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
+      status = Timeout::timeout(15){
+        media_items = client.media_search(lat,lng,{:count =>100, :distance => 5000, 
+          :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
+      }
     rescue
-      redirect "/error/api" 
+      if e.is_a?(Timeout::Error) || e.is_a?(Instagram::ServiceUnavailable)
+        redirect "/error/api_timeout"
+      else
+        redirect "/error/api"
+      end
     end
     places = Hash.new
     media_items.each do |media_item|
@@ -118,10 +130,16 @@ class Instaplaces
     html = "<h3>Photos near <a href='/nearby/#{lat},#{lng}'>#{lat},#{lng}</a></h3>"
   
     begin
-      media_items = client.media_search(lat,lng,{:count =>100, :distance => 5000, 
-        :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
-    rescue
-      redirect "/error/web"
+      status = Timeout::timeout(15){
+        media_items = client.media_search(lat,lng,{:count =>100, :distance => 5000, 
+          :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
+      }
+    rescue Exception => e
+      if e.is_a?(Timeout::Error) || e.is_a?(Instagram::ServiceUnavailable)
+        redirect "/error/timeout"
+      else
+        redirect "/error/web"
+      end
     end
     places = Hash.new
     media_items.each do |media_item|

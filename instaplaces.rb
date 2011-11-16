@@ -35,7 +35,7 @@ class Instaplaces < Sinatra::Base; end;
 
 class Instaplaces
   get "/" do
-    haml "<div id='pictures'>Please allow geolocation services...</div>"
+    haml "<div id='pictures'>Loading. Please allow geolocation services...</div>"
   end
 
   get '/stylesheets/style.css' do
@@ -94,8 +94,8 @@ class Instaplaces
     lng = loc_string.split(",")[1]
   
     begin
-      status = Timeout::timeout(15){
-        media_items = client.media_search(lat,lng,{:count =>100, :distance => 5000, 
+      media_items = Timeout::timeout(15){
+        client.media_search(lat,lng,{:count =>100, :distance => 5000, 
           :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
       }
     rescue
@@ -130,8 +130,8 @@ class Instaplaces
     html = "<h3>Photos near <a href='/nearby/#{lat},#{lng}'>#{lat},#{lng}</a></h3>"
   
     begin
-      status = Timeout::timeout(15){
-        media_items = client.media_search(lat,lng,{:count =>100, :distance => 5000, 
+      media_items = Timeout::timeout(15){
+        client.media_search(lat,lng,{:count =>100, :distance => 5000, 
           :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
       }
     rescue Exception => e

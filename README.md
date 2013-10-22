@@ -1,7 +1,7 @@
 # Instaplaces
 
 ## About ##
-[Instaplaces](http://instaplac.es) is a tool for finding interesting places around you using pictures taken on Instagram. 
+Instaplaces is a tool for finding interesting places around you using pictures taken on Instagram. 
 
 <img src='https://github.com/justinxreese/Instaplaces/raw/master/doc/Screenshot.png' width='50%'/>
 

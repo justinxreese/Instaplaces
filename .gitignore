@@ -5,3 +5,4 @@ pitch
 tmp/restart.txt
 config/keys.yml.production
 .env.production
+.env

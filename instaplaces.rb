@@ -65,10 +65,6 @@ class Instaplaces
     elsif intent == 'web'
       html = "<div id='error'>Sorry, something went wrong on Instagram's side. Try reloading.<div>"
       haml html, :layout => (request.xhr? ? false : :layout)
-    elsif intent == 'api'
-      {error:"Instagram service error"}.to_json
-    elsif intent == 'api_timeout'
-      {error:"Instagram service unavailable"}.to_json
     end
   end
 

@@ -80,7 +80,7 @@ class Instaplaces
   end
 
   get "/nearby/:lat_lng" do
-    client = Instagram.client(:access_token => session[:access_token])
+    @client = Instagram.client(:access_token => session[:access_token])
 
     # loc_string = "40.405784,-79.908714"
     loc_string = params[:lat_lng].gsub(/[^0-9,\.-]/,'')
@@ -90,7 +90,7 @@ class Instaplaces
 
     begin
       media_items = Timeout::timeout(15){
-        client.media_search(lat,lng,{:count =>100, :distance => 5000,
+        @client.media_search(lat,lng,{:count =>100, :distance => 5000,
           :max_timestamp => Time.now.to_i, :min_timestamp => (Date.today - (2*365)).to_time.to_i})
       }
     rescue Exception => e
@@ -100,41 +100,23 @@ class Instaplaces
         redirect "/error/web"
       end
     end
-    places = Hash.new
+    @places = Hash.new
     media_items.each do |media_item|
-      places[media_item.location.id] = [] unless places[media_item.location.id]
+      @places[media_item.location.id] = [] unless @places[media_item.location.id]
       post = InstagramPost.new
       post.link = media_item.link
       post.thumb_url = media_item.images.thumbnail.url
       post.location_name = media_item.location.name
       post.location_lat = media_item.location.latitude
       post.location_lng = media_item.location.longitude
-      places[media_item.location.id] << post
+      @places[media_item.location.id] << post
     end # media_item
 
-    places.sort{|a, b| -1*(a[1].count <=> b[1].count)}.each do |place_id,posts|
-      html << "<div class='place'>"
-      if place_id
-        html << "<div class='title'>"
-        html << "<div class='location-name'>#{client.location(place_id).name}</div>"
-        pic_word = posts.count == 1 ? "Pic" : "Pics"
-        html << "<div class='number-posts'>#{posts.count}</div> #{pic_word}"
-        html << "</div>"
-        posts.each do |post|
-          html << post.to_html
-        end
-      else
-        html << "<div class='title'>"
-        html << "<div class='location-name'>N/A</div>"
-        pic_word = posts.count == 1 ? "Pic" : "Pics"
-        html << "<div class='number-posts'>#{posts.count}</div> #{pic_word}"
-        html << "</div>"
-        posts.each do |post|
-          html << post.to_html
-        end
-      end
-      html << "</div>"
+    @places.sort{|a, b| -1*(a[1].count <=> b[1].count)}.each do |place_id,posts|
+      @place_id = place_id
+      @posts = posts
+      html += haml :place, :layout => (request.xhr? ? false : :layout)
     end
-    haml html, :layout => (request.xhr? ? false : :layout)
+    html
   end
 end

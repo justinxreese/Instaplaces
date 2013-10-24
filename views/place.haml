@@ -1,0 +1,7 @@
+.place
+  .title
+    .location-name= @place_id ? @client.location(@place_id).name : 'N/A'
+    - pic_word = @posts.count == 1 ? "Pic" : "Pics"
+    .number-posts= "#{@posts.count} #{pic_word}"
+  - @posts.each do |post|
+    = post.to_html

@@ -7,12 +7,9 @@ require 'timeout'
 
 enable :sessions
 
-CALLBACK_URL = "http://instaplac.es/oauth/callback"
-key_file = YAML.load_file('config/keys.yml')
-
 Instagram.configure do |config|
-  config.client_id = key_file['client_id'] 
-  config.client_secret = key_file['client_secret'] 
+  config.client_id = ENV['CLIENT_ID']
+  config.client_secret = ENV['CLIENT_SECRET']
 end
 
 class InstagramPost 

@@ -4,3 +4,4 @@ pitch
 .sass-cache/*/*
 tmp/restart.txt
 config/keys.yml.production
+.env.production

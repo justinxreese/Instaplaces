@@ -3,3 +3,4 @@ pitch
 .DS_Store
 .sass-cache/*/*
 tmp/restart.txt
+config/keys.yml.production

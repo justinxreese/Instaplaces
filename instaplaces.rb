@@ -7,7 +7,8 @@ require 'timeout'
 
 enable :sessions
 
-CALLBACK_URL = "http://instaplac.es/oauth/callback"
+DOMAIN = "localhost:9292"
+CALLBACK_URL = "http://#{DOMAIN}/oauth/callback"
 key_file = YAML.load_file('config/keys.yml')
 
 Instagram.configure do |config|
@@ -77,9 +78,8 @@ class Instaplaces
   
   get "/feed" do
     client = Instagram.client(:access_token => session[:access_token])
-    user = client.user
   
-    html = "<h1>#{user.username}'s recent photos</h1>"
+    html = "<h1>Your recent photos</h1>"
     for media_item in client.user_recent_media
       html << "<img src='#{media_item.images.thumbnail.url}'>"
     end
@@ -118,6 +118,11 @@ class Instaplaces
     end # media_item
   
     places.collect{|id,posts|posts.collect{|x| x.to_json}}.to_json
+  end
+
+  get "/favs/:user" do
+    client = Instagram.client(:access_token => session[:access_token])
+    media_items = client.user_liked_media({})
   end
 
   get "/nearby/:lat_lng" do

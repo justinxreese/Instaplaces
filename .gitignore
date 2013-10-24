@@ -2,3 +2,4 @@ config/*.yml
 pitch
 .DS_Store
 .sass-cache/*/*
+tmp/restart.txt
